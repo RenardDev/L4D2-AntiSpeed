@@ -1,0 +1,50 @@
+"Games"
+{
+    "left4dead2"
+    {
+        "Offsets"
+        {
+            "CBasePlayer::ProcessUsercmds"
+            {
+                "windows"   "453"
+                "linux"     "452"
+                "mac"       "452"
+            }
+        }
+
+        "Functions"
+        {
+            "CBasePlayer::ProcessUsercmds"
+            {
+                "offset"    "CBasePlayer::ProcessUsercmds"
+                "hooktype"  "entity"
+                "return"    "void"
+                "this"      "entity"
+
+                "arguments"
+                {
+                    "cmds"
+                    {
+                        "type"  "objectptr"
+                    }
+                    "numcmds"
+                    {
+                        "type"  "int"
+                    }
+                    "totalcmds"
+                    {
+                        "type"  "int"
+                    }
+                    "dropped_packets"
+                    {
+                        "type"  "int"
+                    }
+                    "paused"
+                    {
+                        "type"  "bool"
+                    }
+                }
+            }
+        }
+    }
+}
