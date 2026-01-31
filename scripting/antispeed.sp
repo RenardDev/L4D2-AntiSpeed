@@ -80,16 +80,28 @@ static void UpdateCachedCapTicks() {
     g_nCachedCapTicks = ClampInt(nMaxNewUserCmds + nPingSlackTicks, 0, 2048);
 }
 
-static void ResetClientState(int nClient, int nServerTickNow = -1) {
+static int GetDefaultInitialTokens() {
+    int nSlack = g_ConVarPingSlackTicks.IntValue;
+    if (nSlack < 0) {
+        nSlack = 0;
+    }
+
+    int nTokens = 1 + nSlack;
+    return ClampInt(nTokens, 0, g_nCachedCapTicks);
+}
+
+static void ResetClientState(int nClient, int nServerTickNow = -1, int nInitialTokens = -1) {
     if (nServerTickNow < 0) {
         nServerTickNow = GetGameTickCount();
     }
 
-    g_nTokenTicks[nClient] = g_nCachedCapTicks;
+    int nTokens = (nInitialTokens >= 0) ? nInitialTokens : GetDefaultInitialTokens();
+
+    g_nTokenTicks[nClient] = ClampInt(nTokens, 0, g_nCachedCapTicks);
     g_nLastServerTickSeen[nClient] = nServerTickNow;
 }
 
-static void UnhookClient(int nClient) {
+static void UnHookClient(int nClient) {
     if (g_nHookIDPre[nClient] != INVALID_HOOK_ID) {
         DynamicHook.RemoveHook(g_nHookIDPre[nClient]);
         g_nHookIDPre[nClient] = INVALID_HOOK_ID;
@@ -101,7 +113,7 @@ static void HookClient(int nClient) {
         return;
     }
 
-    UnhookClient(nClient);
+    UnHookClient(nClient);
 
     g_nHookIDPre[nClient] = g_hHookProcessUserCmds.HookEntity(Hook_Pre, nClient, Hook_ProcessUserCmds_Pre);
 
@@ -113,14 +125,14 @@ static void HookAllClients() {
         if (IsClientInGame(nClient) && !IsFakeClient(nClient)) {
             HookClient(nClient);
         } else {
-            UnhookClient(nClient);
+            UnHookClient(nClient);
         }
     }
 }
 
-static void UnhookAllClients() {
+static void UnHookAllClients() {
     for (int nClient = 1; nClient <= MaxClients; nClient++) {
-        UnhookClient(nClient);
+        UnHookClient(nClient);
     }
 }
 
@@ -134,7 +146,7 @@ public void OnConVarChanged_Enable(ConVar hConVar, const char[] sOldValue, const
         return;
     }
 
-    UnhookAllClients();
+    UnHookAllClients();
 }
 
 public void OnConVarChanged_MaxNewUserCmds(ConVar hConVar, const char[] sOldValue, const char[] sNewValue) {
@@ -204,7 +216,7 @@ public void OnPluginStart() {
 }
 
 public void OnPluginEnd() {
-    UnhookAllClients();
+    UnHookAllClients();
 }
 
 public void OnMapStart() {
@@ -213,7 +225,7 @@ public void OnMapStart() {
         return;
     }
 
-    UnhookAllClients();
+    UnHookAllClients();
 }
 
 public void OnClientPutInServer(int nClient) {
@@ -229,7 +241,7 @@ public void OnClientPutInServer(int nClient) {
 }
 
 public void OnClientDisconnect(int nClient) {
-    UnhookClient(nClient);
+    UnHookClient(nClient);
     ResetClientState(nClient);
 }
 
@@ -270,18 +282,18 @@ public MRESReturn Hook_ProcessUserCmds_Pre(int nClient, DHookParam hParams) {
     int nServerTickNow = GetGameTickCount();
     int nLastServerTick = g_nLastServerTickSeen[nClient];
 
-    int nDeltaServerTicks = (nLastServerTick > 0) ? (nServerTickNow - nLastServerTick) : 1;
-    if ((nDeltaServerTicks < 0) || (nDeltaServerTicks > 4096)) {
-        nDeltaServerTicks = 1;
-    }
-
-    if (nLastServerTick <= 0) {
-        g_nTokenTicks[nClient] = g_nCachedCapTicks;
+    if ((nLastServerTick <= 0) || (nLastServerTick > nServerTickNow) || ((nServerTickNow - nLastServerTick) > 4096)) {
+        g_nTokenTicks[nClient] = GetDefaultInitialTokens();
+        g_nLastServerTickSeen[nClient] = nServerTickNow;
     } else {
-        g_nTokenTicks[nClient] = ClampInt(g_nTokenTicks[nClient] + nDeltaServerTicks, 0, g_nCachedCapTicks);
-    }
+        int nDeltaServerTicks = nServerTickNow - nLastServerTick;
+        if (nDeltaServerTicks < 0 || nDeltaServerTicks > 4096) {
+            nDeltaServerTicks = 1;
+        }
 
-    g_nLastServerTickSeen[nClient] = nServerTickNow;
+        g_nTokenTicks[nClient] = ClampInt(g_nTokenTicks[nClient] + nDeltaServerTicks, 0, g_nCachedCapTicks);
+        g_nLastServerTickSeen[nClient] = nServerTickNow;
+    }
 
     int nAllowedNewUserCmds = nNewUserCmds;
 
