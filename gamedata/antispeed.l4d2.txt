@@ -6,8 +6,8 @@
         {
             "CBasePlayer::ProcessUsercmds"
             {
-                "windows"   "453"
-                "linux"     "454"
+                "windows" "453"
+                "linux"   "454"
             }
         }
 
@@ -15,32 +15,32 @@
         {
             "CBasePlayer::ProcessUsercmds"
             {
-                "offset"    "CBasePlayer::ProcessUsercmds"
-                "hooktype"  "entity"
-                "return"    "void"
-                "this"      "entity"
+                "offset"   "CBasePlayer::ProcessUsercmds"
+                "hooktype" "entity"
+                "return"   "void"
+                "this"     "entity"
 
                 "arguments"
                 {
                     "cmds"
                     {
-                        "type"  "objectptr"
+                        "type" "objectptr"
                     }
                     "numcmds"
                     {
-                        "type"  "int"
+                        "type" "int"
                     }
                     "totalcmds"
                     {
-                        "type"  "int"
+                        "type" "int"
                     }
                     "dropped_packets"
                     {
-                        "type"  "int"
+                        "type" "int"
                     }
                     "paused"
                     {
-                        "type"  "bool"
+                        "type" "bool"
                     }
                 }
             }
