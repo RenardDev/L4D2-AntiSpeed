@@ -17,7 +17,7 @@ public Plugin myinfo = {
     author      = "RenardDev",
     description = "Fix for RapidFire/SpeedHack",
     version     = "1.1.0",
-    url         = "https://github.com/RenardDev/AntiSpeed"
+    url         = "https://github.com/RenardDev/L4D2-AntiSpeed"
 };
 
 // ================================================================
