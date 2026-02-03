@@ -16,7 +16,7 @@ public Plugin myinfo = {
     name        = "Anti-Speed",
     author      = "RenardDev",
     description = "Fix for RapidFire/SpeedHack",
-    version     = "1.1.0",
+    version     = "1.1.1",
     url         = "https://github.com/RenardDev/L4D2-AntiSpeed"
 };
 
@@ -287,7 +287,7 @@ public MRESReturn Hook_ProcessUserCmds_Pre(int nClient, DHookParam hParams) {
         g_nLastServerTickSeen[nClient] = nServerTickNow;
     } else {
         int nDeltaServerTicks = nServerTickNow - nLastServerTick;
-        if (nDeltaServerTicks < 0 || nDeltaServerTicks > 4096) {
+        if ((nDeltaServerTicks < 0) || (nDeltaServerTicks > 4096)) {
             nDeltaServerTicks = 1;
         }
 
