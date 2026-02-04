@@ -13,7 +13,7 @@
 // ================================================================
 
 public Plugin myinfo = {
-    name        = "Anti-Speed",
+    name        = "AntiSpeed",
     author      = "RenardDev",
     description = "Fix for RapidFire/SpeedHack",
     version     = "1.1.1",
